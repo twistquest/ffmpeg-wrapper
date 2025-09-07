@@ -19,15 +19,19 @@ window.addEventListener("drop", (e) => {
   e.preventDefault();
 });
 
-function dropHandler(ev: any) {
+function dropHandler(ev: DragEvent) {
   ev.preventDefault();
-  console.log("drophandler is firing");
-  let result = "";
-  [...ev.dataTransfer.items].forEach((item, i) => {
+  if (!ev.dataTransfer) return
+  Array.from(ev.dataTransfer.items).forEach((item, i) => {
     if (item.kind === "file") {
       const file = item.getAsFile();
-      const ext = "." + file.name.split(".").pop().toLowerCase();
-      result += `• file[${i}].name = ${file.name}\n`;
+      if (!file) return 
+      let ext = ""
+      let parts = file.name.split(".")
+      let lastPart = parts.pop()
+      if (lastPart) {
+        ext = "." + lastPart.toLowerCase()
+      }
       if (videoFormats.indexOf(ext) !== -1) {
         output.textContent = "this file is compressable";
       } else {
